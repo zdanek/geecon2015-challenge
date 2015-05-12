@@ -1,0 +1,29 @@
+
+plugins {
+    id 'java'
+    id 'groovy'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '1.2.3.RELEASE'
+
+    testCompile group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4'
+    testCompile group: 'org.spockframework', name: 'spock-spring', version: '1.0-groovy-2.4'
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '1.2.3.RELEASE'
+    testCompile group: 'com.github.tomakehurst', name: 'wiremock', version: '1.55'
+}
+
+test {
+    testLogging {
+        exceptionFormat 'full'
+        events 'passed', 'skipped', 'failed', 'standard_error'
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.4'
+}
