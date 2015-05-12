@@ -2,7 +2,7 @@ Allegro Geecon 2015 Challenge
 =============================
 
 This is our coding challenge prepared for Geecon 2015. In order to claim points from this challenge, you need to be
-registered at [our conference portal](http://conf.allegro.tech.io) using your **Github** account.
+registered at [our conference portal](http://conf.allegrotech.io) using your **Github** account.
 
 ## Task
 
