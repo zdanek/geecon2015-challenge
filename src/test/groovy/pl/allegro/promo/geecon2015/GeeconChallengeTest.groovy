@@ -26,6 +26,8 @@ import static pl.allegro.promo.geecon2015.stub.UserServiceStub.userService
 ])
 class GeeconChallengeTest extends Specification {
 
+    public static final String UUID_A = "ee481f6c-dcce-41d1-89b8-bbc268dec843"
+    public static final String UUID_B = "fb0d5e34-6317-4add-a8d9-6e4ae415f31e"
     @ClassRule
     @Shared
     WireMockClassRule financialStatsServer = new WireMockClassRule(45367)
@@ -45,21 +47,21 @@ class GeeconChallengeTest extends Specification {
         financialStatisticsService(financialStatsServer)
                 .forMinimalIncome(1000)
                 .forLimit(2)
-                .willReturn("ee481f6c-dcce-41d1-89b8-bbc268dec843", "fb0d5e34-6317-4add-a8d9-6e4ae415f31e")
+                .willReturn(UUID_A, UUID_B)
                 .teach()
     }
-    
+
     void cleanupSpec() {
         new TravisReporter().report()
     }
 
     def "should generate report for all users"() {
         given:
-        userService(userServer).whenRequested("ee481f6c-dcce-41d1-89b8-bbc268dec843").returns("User A").teach()
-        userService(userServer).whenRequested("fb0d5e34-6317-4add-a8d9-6e4ae415f31e").returns("User B").teach()
+        userService(userServer).whenRequested(UUID_A).returns("User A").teach()
+        userService(userServer).whenRequested(UUID_B).returns("User B").teach()
 
-        transactionService(transactionServer).whenRequested("ee481f6c-dcce-41d1-89b8-bbc268dec843").returns(10, 30).teach()
-        transactionService(transactionServer).whenRequested("fb0d5e34-6317-4add-a8d9-6e4ae415f31e").returns(20, 50).teach()
+        transactionService(transactionServer).whenRequested(UUID_A).returns(10, 30).teach()
+        transactionService(transactionServer).whenRequested(UUID_B).returns(20, 50).teach()
 
         when:
         Report report = reportGenerator.generate(new ReportRequest(1000, 2))
@@ -67,18 +69,18 @@ class GeeconChallengeTest extends Specification {
         then:
         report.size() == 2
         report.toSet() == [
-                new ReportedUser(UUID.fromString("ee481f6c-dcce-41d1-89b8-bbc268dec843"), "User A", 40),
-                new ReportedUser(UUID.fromString("fb0d5e34-6317-4add-a8d9-6e4ae415f31e"), "User B", 70)
+                new ReportedUser(UUID.fromString(UUID_A), "User A", 40),
+                new ReportedUser(UUID.fromString(UUID_B), "User B", 70)
         ] as Set
     }
 
     def "should attach <failed> string instead of name in report, when failed to fetch user data"() {
         given:
-        userService(userServer).whenRequested("ee481f6c-dcce-41d1-89b8-bbc268dec843").returns("User A").teach()
-        userService(userServer).whenRequested("fb0d5e34-6317-4add-a8d9-6e4ae415f31e").fails().teach()
+        userService(userServer).whenRequested(UUID_A).returns("User A").teach()
+        userService(userServer).whenRequested(UUID_B).fails().teach()
 
-        transactionService(transactionServer).whenRequested("ee481f6c-dcce-41d1-89b8-bbc268dec843").returns(10).teach()
-        transactionService(transactionServer).whenRequested("fb0d5e34-6317-4add-a8d9-6e4ae415f31e").returns(20).teach()
+        transactionService(transactionServer).whenRequested(UUID_A).returns(10).teach()
+        transactionService(transactionServer).whenRequested(UUID_B).returns(20).teach()
 
         when:
         Report report = reportGenerator.generate(new ReportRequest(1000, 2))
@@ -86,18 +88,18 @@ class GeeconChallengeTest extends Specification {
         then:
         report.size() == 2
         report.toSet() == [
-                new ReportedUser(UUID.fromString("ee481f6c-dcce-41d1-89b8-bbc268dec843"), "User A", 10),
-                new ReportedUser(UUID.fromString("fb0d5e34-6317-4add-a8d9-6e4ae415f31e"), "<failed>", 20)
+                new ReportedUser(UUID.fromString(UUID_A), "User A", 10),
+                new ReportedUser(UUID.fromString(UUID_B), "<failed>", 20)
         ] as Set
     }
 
     def "should return null as transaction amount in report when failed to fetch transactions data"() {
         given:
-        userService(userServer).whenRequested("ee481f6c-dcce-41d1-89b8-bbc268dec843").returns("User A").teach()
-        userService(userServer).whenRequested("fb0d5e34-6317-4add-a8d9-6e4ae415f31e").returns("User B").teach()
+        userService(userServer).whenRequested(UUID_A).returns("User A").teach()
+        userService(userServer).whenRequested(UUID_B).returns("User B").teach()
 
-        transactionService(transactionServer).whenRequested("ee481f6c-dcce-41d1-89b8-bbc268dec843").returns(10).teach()
-        transactionService(transactionServer).whenRequested("fb0d5e34-6317-4add-a8d9-6e4ae415f31e").fails().teach()
+        transactionService(transactionServer).whenRequested(UUID_A).returns(10).teach()
+        transactionService(transactionServer).whenRequested(UUID_B).fails().teach()
 
         when:
         Report report = reportGenerator.generate(new ReportRequest(1000, 2))
@@ -105,8 +107,8 @@ class GeeconChallengeTest extends Specification {
         then:
         report.size() == 2
         report.toSet() == [
-                new ReportedUser(UUID.fromString("ee481f6c-dcce-41d1-89b8-bbc268dec843"), "User A", 10),
-                new ReportedUser(UUID.fromString("fb0d5e34-6317-4add-a8d9-6e4ae415f31e"), "User B", null)
+                new ReportedUser(UUID.fromString(UUID_A), "User A", 10),
+                new ReportedUser(UUID.fromString(UUID_B), "User B", null)
         ] as Set
     }
 }

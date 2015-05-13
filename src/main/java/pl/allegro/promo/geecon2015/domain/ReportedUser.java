@@ -5,9 +5,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class ReportedUser {
-    
+
     private final UUID id;
-    
+
     private final String name;
 
     private final BigDecimal transactionsAmount;
@@ -42,5 +42,10 @@ public class ReportedUser {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, transactionsAmount);
+    }
+
+    @Override
+    public String toString() {
+        return id.toString();
     }
 }
