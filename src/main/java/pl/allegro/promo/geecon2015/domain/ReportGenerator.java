@@ -61,7 +61,7 @@ public class ReportGenerator {
 
         BigDecimal sum = new BigDecimal(0);
         for (UserTransaction userTransaction : transactions) {
-            sum.add(userTransaction.getAmount());
+            sum = sum.add(userTransaction.getAmount());
         }
         return sum;
     }
